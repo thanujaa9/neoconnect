@@ -1,5 +1,16 @@
-node_modules
+# Node
+node_modules/
+
+# Env files
 .env
-.next
-dist
 .env.local
+
+# Next.js
+.next/
+dist/
+
+# uploads
+server/uploads/
+
+# logs
+*.log
