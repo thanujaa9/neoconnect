@@ -4,36 +4,42 @@ const path = require('path');
 const cors = require('cors');
 require('dotenv').config();
 
+const runEscalation = require('./jobs/escalation');
+
 const app = express();
 
-// Middleware
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Methods', 'GET,POST,PATCH,DELETE,OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  if (req.method === 'OPTIONS') return res.sendStatus(200);
-  next();
-});
+/* -------------------- MIDDLEWARE -------------------- */
 
+app.use(cors()); // better than manual headers
 app.use(express.json());
+
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Routes
-app.use('/api/auth', require('./routes/auth'));
-app.use('/api/cases', require('./routes/cases'));
-app.use('/api/polls', require('./routes/polls'));
-app.use('/api/analytics', require('./routes/analytics'));
+/* -------------------- ROUTES -------------------- */
 
-// Health check
 app.get('/', (req, res) => {
   res.json({ message: 'NeoConnect API running' });
 });
 
-// Connect to MongoDB and start server
+app.use('/api/auth', require('./routes/auth'));
+app.use('/api/cases', require('./routes/cases'));
+app.use('/api/polls', require('./routes/polls'));
+app.use('/api/analytics', require('./routes/analytics'));
+app.use('/api/hub', require('./routes/hub'));
+/* -------------------- DATABASE -------------------- */
+
 mongoose.connect(process.env.MONGO_URI)
   .then(() => {
     console.log('MongoDB connected');
+
+    // Start background jobs AFTER DB connection
+    runEscalation();
+
     app.listen(process.env.PORT || 5000, () => {
       console.log(`Server running on port ${process.env.PORT || 5000}`);
     });
+
   })
+  .catch(err => {
+    console.error('MongoDB connection failed:', err);
+  });

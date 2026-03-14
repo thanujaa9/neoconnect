@@ -8,24 +8,27 @@ const links = {
     { label: 'Submit Case', href: '/submit' },
     { label: 'Track Case', href: '/track' },
     { label: 'Polls', href: '/polls' },
+    { label: 'Public Hub', href: '/hub' },
   ],
   secretariat: [
-  { label: 'All Cases', href: '/cases' },
-  { label: 'My Assigned Cases', href: '/secretariat-cases' },
-  { label: 'Analytics', href: '/analytics' },
-  { label: 'Polls', href: '/polls' },
-],
+    { label: 'All Cases', href: '/cases' },
+    { label: 'My Assigned Cases', href: '/secretariat-cases' },
+    { label: 'Analytics', href: '/analytics' },
+    { label: 'Polls', href: '/polls' },
+    { label: 'Public Hub', href: '/hub' },
+  ],
   case_manager: [
     { label: 'My Cases', href: '/mycases' },
     { label: 'Polls', href: '/polls' },
+    { label: 'Public Hub', href: '/hub' },
   ],
   admin: [
     { label: 'All Cases', href: '/cases' },
     { label: 'Analytics', href: '/analytics' },
     { label: 'Polls', href: '/polls' },
+    { label: 'Public Hub', href: '/hub' },
   ],
 };
-
 export default function Sidebar({ user }) {
   const router = useRouter();
   const navLinks = links[user?.role] || [];

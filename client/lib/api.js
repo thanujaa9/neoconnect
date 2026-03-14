@@ -43,7 +43,14 @@ export const api = {
 }).then(r => r.json()),
 
 getSecretariatCases: () => fetch(`${BASE_URL}/cases/mycases/secretariat`, { headers: headers() }).then(r => r.json()),
-
+getDigest: () => fetch(`${BASE_URL}/hub/digest`).then(r => r.json()),
+getImpact: () => fetch(`${BASE_URL}/hub/impact`).then(r => r.json()),
+getMinutes: () => fetch(`${BASE_URL}/hub/minutes`).then(r => r.json()),
+uploadMinutes: (formData) => fetch(`${BASE_URL}/hub/minutes`, {
+  method: 'POST',
+  headers: { 'Authorization': `Bearer ${getToken()}` },
+  body: formData
+}).then(r => r.json()),
   assignCase: (id, assignedTo) => fetch(`${BASE_URL}/cases/${id}/assign`, {
     method: 'PATCH',
     headers: headers(),
