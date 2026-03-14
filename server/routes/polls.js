@@ -29,6 +29,9 @@ router.get('/', auth, async (req, res) => {
 
 router.post('/:id/vote', auth, async (req, res) => {
   try {
+    if (req.user.role !== 'staff') {
+      return res.status(403).json({ message: 'Only staff can vote in polls' });
+    }
     const poll = await Poll.findById(req.params.id);
     if (!poll.isActive) {
       return res.status(400).json({ message: 'Poll is closed' });

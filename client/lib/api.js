@@ -76,7 +76,10 @@ uploadMinutes: (formData) => fetch(`${BASE_URL}/hub/minutes`, {
     headers: headers(),
     body: JSON.stringify(data)
   }).then(r => r.json()),
-
+closePoll: (pollId) => fetch(`${BASE_URL}/polls/${pollId}/close`, {
+  method: 'PATCH',
+  headers: headers()
+}).then(r => r.json()),
   vote: (pollId, optionId) => fetch(`${BASE_URL}/polls/${pollId}/vote`, {
     method: 'POST',
     headers: headers(),
