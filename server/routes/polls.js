@@ -33,14 +33,12 @@ router.post('/:id/vote', auth, async (req, res) => {
     if (!poll.isActive) {
       return res.status(400).json({ message: 'Poll is closed' });
     }
-
-    const alreadyVoted = poll.options.some(opt => 
+    const alreadyVoted = poll.options.some(opt =>
       opt.votes.includes(req.user.id)
     );
     if (alreadyVoted) {
       return res.status(400).json({ message: 'You have already voted' });
     }
-
     const option = poll.options.id(req.body.optionId);
     option.votes.push(req.user.id);
     await poll.save();
@@ -49,7 +47,6 @@ router.post('/:id/vote', auth, async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
-
 router.patch('/:id/close', auth, allowRoles('secretariat', 'admin'), async (req, res) => {
   try {
     const poll = await Poll.findByIdAndUpdate(

@@ -178,4 +178,24 @@ router.get('/mycases/secretariat', auth, allowRoles('secretariat', 'admin'), asy
     res.status(500).json({ message: err.message });
   }
 });
+router.post('/run-escalation', auth, allowRoles('admin', 'secretariat'), async (req, res) => {
+  try {
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+    const cases = await Case.find({
+      status: 'Assigned',
+      assignedAt: { $lt: sevenDaysAgo }
+    });
+
+    for (const c of cases) {
+      c.status = 'Escalated';
+      await c.save();
+    }
+
+    res.json({ message: `Escalation done. ${cases.length} cases escalated.` });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
 module.exports = router;
