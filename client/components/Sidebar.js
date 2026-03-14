@@ -28,6 +28,13 @@ const links = {
     { label: 'Polls', href: '/polls' },
     { label: 'Public Hub', href: '/hub' },
   ],
+  admin: [
+  { label: 'All Cases', href: '/cases' },
+  { label: 'Analytics', href: '/analytics' },
+  { label: 'Polls', href: '/polls' },
+  { label: 'Public Hub', href: '/hub' },
+  { label: 'User Management', href: '/admin' },
+],
 };
 export default function Sidebar({ user }) {
   const router = useRouter();

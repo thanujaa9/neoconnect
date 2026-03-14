@@ -76,6 +76,12 @@ uploadMinutes: (formData) => fetch(`${BASE_URL}/hub/minutes`, {
     headers: headers(),
     body: JSON.stringify(data)
   }).then(r => r.json()),
+  getAllUsers: () => fetch(`${BASE_URL}/auth/users`, { headers: headers() }).then(r => r.json()),
+updateUserRole: (id, role) => fetch(`${BASE_URL}/auth/users/${id}/role`, {
+  method: 'PATCH',
+  headers: headers(),
+  body: JSON.stringify({ role })
+}).then(r => r.json()),
 closePoll: (pollId) => fetch(`${BASE_URL}/polls/${pollId}/close`, {
   method: 'PATCH',
   headers: headers()

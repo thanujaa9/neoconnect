@@ -9,7 +9,7 @@ router.post('/register', async (req, res) => {
   try {
     const { name, email, password, role, department } = req.body;
 
-    // Check if user already exists
+ 
     const existing = await User.findOne({ email });
     if (existing) {
       return res.status(400).json({ message: 'Email already registered' });
@@ -42,7 +42,7 @@ router.post('/login', async (req, res) => {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
 
-    // Create JWT token
+ 
     const token = jwt.sign(
       { id: user._id, role: user.role, name: user.name },
       process.env.JWT_SECRET,
@@ -65,7 +65,7 @@ router.get('/managers', require('../middleware/auth').auth, async (req, res) => 
     res.status(500).json({ message: err.message });
   }
 });
-// Get current logged in user
+
 router.get('/me', require('../middleware/auth').auth, async (req, res) => {
   try {
     const user = await User.findById(req.user.id).select('-password');
@@ -74,5 +74,25 @@ router.get('/me', require('../middleware/auth').auth, async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
+router.get('/users', require('../middleware/auth').auth, require('../middleware/auth').allowRoles('admin'), async (req, res) => {
+  try {
+    const users = await User.find().select('-password');
+    res.json(users);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
 
+router.patch('/users/:id/role', require('../middleware/auth').auth, require('../middleware/auth').allowRoles('admin'), async (req, res) => {
+  try {
+    const user = await User.findByIdAndUpdate(
+      req.params.id,
+      { role: req.body.role },
+      { new: true }
+    ).select('-password');
+    res.json(user);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
 module.exports = router;
