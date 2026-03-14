@@ -18,7 +18,8 @@ const storage = new CloudinaryStorage({
   params: {
     folder: 'neoconnect-minutes',
     allowed_formats: ['pdf'],
-    resource_type: 'raw',
+    resource_type: 'auto',
+    access_mode: 'public',
   },
 });
 

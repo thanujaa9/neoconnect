@@ -17,9 +17,10 @@ const storage = new CloudinaryStorage({
   params: {
     folder: 'neoconnect',
     allowed_formats: ['jpg', 'jpeg', 'png', 'pdf'],
+    resource_type: 'auto',
+    access_mode: 'public',
   },
 });
-
 const upload = multer({ storage });
 
 const uploadMiddleware = (req, res, next) => {
