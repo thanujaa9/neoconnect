@@ -165,7 +165,7 @@ export default function CaseDetail() {
           {caseData.fileUrl && (
             <div className="mt-4 border-t border-slate-100 pt-4">
               
-                <a href={`${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '')}${caseData.fileUrl}`}
+                <a href={caseData.fileUrl}
                 target="_blank"
                 className="inline-flex items-center gap-2 text-sm text-teal-600 bg-teal-50 px-3 py-2 rounded-lg hover:bg-teal-100 transition-colors"
               >
