@@ -18,6 +18,7 @@ export default function CaseDetail() {
     if (!stored) { router.push('/'); return; }
     setUser(JSON.parse(stored));
     fetchCase();
+    fetchManagers();
   }, []);
 
   const fetchCase = async () => {
@@ -26,7 +27,13 @@ export default function CaseDetail() {
     setLoading(false);
   };
 
+  const fetchManagers = async () => {
+    const res = await api.getManagers();
+    setManagers(Array.isArray(res) ? res : []);
+  };
+
   const handleAssign = async (assignedTo) => {
+    if (!assignedTo) return;
     await api.assignCase(id, assignedTo);
     fetchCase();
   };
@@ -47,10 +54,16 @@ export default function CaseDetail() {
   const statusColor = {
     'New': 'bg-slate-100 text-slate-700',
     'Assigned': 'bg-blue-50 text-blue-700',
-    'In Progress': 'bg-indigo-50 text-indigo-700',
-    'Pending': 'bg-yellow-50 text-yellow-700',
+    'In Progress': 'bg-teal-50 text-teal-700',
+    'Pending': 'bg-amber-50 text-amber-700',
     'Resolved': 'bg-green-50 text-green-700',
     'Escalated': 'bg-red-50 text-red-700',
+  };
+
+  const severityBorder = {
+    'Low': 'border-l-4 border-l-green-400',
+    'Medium': 'border-l-4 border-l-amber-400',
+    'High': 'border-l-4 border-l-red-500',
   };
 
   if (loading) return (
@@ -64,23 +77,26 @@ export default function CaseDetail() {
       <div className="max-w-3xl">
         <button
           onClick={() => router.back()}
-          className="text-sm text-indigo-600 hover:underline mb-4 block"
+          className="text-sm text-teal-600 hover:underline mb-4 block"
         >
           ← Back
         </button>
 
-        <div className="bg-white border border-slate-200 rounded-xl p-6 mb-4">
+        <div className={`bg-white border border-slate-200 ${severityBorder[caseData.severity]} rounded-xl p-6 mb-4`}>
           <div className="flex items-start justify-between mb-4">
             <div>
               <div className="flex items-center gap-2 mb-1">
-                <span className="text-xs font-mono text-indigo-600">{caseData.trackingId}</span>
+                <span className="text-xs font-mono text-teal-600">{caseData.trackingId}</span>
                 <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${statusColor[caseData.status]}`}>
                   {caseData.status}
+                </span>
+                <span className={`text-xs font-medium ${caseData.severity === 'High' ? 'text-red-500' : caseData.severity === 'Medium' ? 'text-amber-500' : 'text-green-500'}`}>
+                  {caseData.severity} severity
                 </span>
               </div>
               <h1 className="text-xl font-semibold text-slate-800">{caseData.title}</h1>
               <p className="text-sm text-slate-500 mt-0.5">
-                {caseData.department} · {caseData.category} · {caseData.severity}
+                {caseData.department} · {caseData.category}
               </p>
             </div>
           </div>
@@ -109,9 +125,9 @@ export default function CaseDetail() {
           {caseData.fileUrl && (
             <div className="mt-4">
               
-                <a href={`http://localhost:8000${caseData.fileUrl}`}
+                <a href={`${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '')}${caseData.fileUrl}`}
                 target="_blank"
-                className="text-sm text-indigo-600 hover:underline"
+                className="text-sm text-teal-600 hover:underline"
               >
                 View attached file
               </a>
@@ -121,17 +137,21 @@ export default function CaseDetail() {
 
         {(user?.role === 'secretariat' || user?.role === 'admin') && (
           <div className="bg-white border border-slate-200 rounded-xl p-6 mb-4">
-            <h2 className="text-sm font-semibold text-slate-700 mb-3">Assign to Case Manager</h2>
+            <h2 className="text-sm font-semibold text-slate-700 mb-1">Assign to Case Manager</h2>
+            <p className="text-xs text-slate-400 mb-3">Secretariat manages assignment. Investigation notes are handled by the case manager.</p>
             <div className="flex gap-2">
-              <input
-                type="text"
-                placeholder="Paste user ID of case manager"
-                className="flex-1 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              <select
                 id="assignInput"
-              />
+                className="flex-1 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+              >
+                <option value="">Select case manager</option>
+                {managers.map(m => (
+                  <option key={m._id} value={m._id}>{m.name} — {m.email}</option>
+                ))}
+              </select>
               <button
                 onClick={() => handleAssign(document.getElementById('assignInput').value)}
-                className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm"
+                className="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-lg text-sm"
               >
                 Assign
               </button>
@@ -149,8 +169,8 @@ export default function CaseDetail() {
                   onClick={() => handleStatus(s)}
                   className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors
                     ${caseData.status === s
-                      ? 'bg-indigo-600 text-white border-indigo-600'
-                      : 'border-slate-300 text-slate-600 hover:border-indigo-400'}`}
+                      ? 'bg-teal-600 text-white border-teal-600'
+                      : 'border-slate-300 text-slate-600 hover:border-teal-400'}`}
                 >
                   {s}
                 </button>
@@ -160,7 +180,7 @@ export default function CaseDetail() {
         )}
 
         <div className="bg-white border border-slate-200 rounded-xl p-6">
-          <h2 className="text-sm font-semibold text-slate-700 mb-3">Notes</h2>
+          <h2 className="text-sm font-semibold text-slate-700 mb-3">Investigation Notes</h2>
 
           {caseData.notes?.length === 0 && (
             <p className="text-slate-400 text-sm mb-4">No notes yet.</p>
@@ -168,7 +188,7 @@ export default function CaseDetail() {
 
           <div className="flex flex-col gap-3 mb-4">
             {caseData.notes?.map((n, i) => (
-              <div key={i} className="bg-slate-50 rounded-lg px-4 py-3">
+              <div key={i} className="bg-slate-50 border-l-2 border-l-teal-300 rounded-lg px-4 py-3">
                 <p className="text-sm text-slate-700">{n.text}</p>
                 <p className="text-xs text-slate-400 mt-1">
                   {n.addedBy?.name} · {new Date(n.addedAt).toLocaleDateString()}
@@ -177,22 +197,28 @@ export default function CaseDetail() {
             ))}
           </div>
 
-          {(user?.role !== 'staff') && (
+          {(user?.role === 'case_manager' || user?.role === 'admin') && (
             <form onSubmit={handleNote} className="flex gap-2">
               <input
                 type="text"
                 value={note}
                 onChange={e => setNote(e.target.value)}
-                placeholder="Add a note..."
-                className="flex-1 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                placeholder="Add investigation note..."
+                className="flex-1 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
               />
               <button
                 type="submit"
-                className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm"
+                className="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-lg text-sm"
               >
                 Add
               </button>
             </form>
+          )}
+
+          {user?.role === 'secretariat' && (
+            <div className="bg-slate-50 rounded-lg px-4 py-3">
+              <p className="text-xs text-slate-400">Investigation notes are managed by the assigned Case Manager only.</p>
+            </div>
           )}
         </div>
       </div>

@@ -21,7 +21,7 @@ export const api = {
   }).then(r => r.json()),
 
   getMe: () => fetch(`${BASE_URL}/auth/me`, { headers: headers() }).then(r => r.json()),
-
+  getManagers: () => fetch(`${BASE_URL}/auth/managers`, { headers: headers() }).then(r => r.json()),
   submitCase: (formData) => fetch(`${BASE_URL}/cases`, {
     method: 'POST',
     headers: { 'Authorization': `Bearer ${getToken()}` },
@@ -35,6 +35,14 @@ export const api = {
   getCase: (id) => fetch(`${BASE_URL}/cases/${id}`, { headers: headers() }).then(r => r.json()),
 
   trackCase: (trackingId) => fetch(`${BASE_URL}/cases/track/${trackingId}`).then(r => r.json()),
+  
+  resolveCase: (id, data) => fetch(`${BASE_URL}/cases/${id}/resolve`, {
+  method: 'PATCH',
+  headers: headers(),
+  body: JSON.stringify(data)
+}).then(r => r.json()),
+
+getSecretariatCases: () => fetch(`${BASE_URL}/cases/mycases/secretariat`, { headers: headers() }).then(r => r.json()),
 
   assignCase: (id, assignedTo) => fetch(`${BASE_URL}/cases/${id}/assign`, {
     method: 'PATCH',

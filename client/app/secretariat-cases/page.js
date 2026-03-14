@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import Layout from '@/components/Layout';
 import { api } from '@/lib/api';
 
-export default function MyCases() {
+export default function SecretariatCases() {
   const router = useRouter();
   const [user, setUser] = useState(null);
   const [cases, setCases] = useState([]);
@@ -18,7 +18,7 @@ export default function MyCases() {
   }, []);
 
   const fetchCases = async () => {
-    const res = await api.getMyCases();
+    const res = await api.getSecretariatCases();
     setCases(Array.isArray(res) ? res : []);
     setLoading(false);
   };
@@ -40,35 +40,35 @@ export default function MyCases() {
 
   const stats = {
     total: cases.length,
-    active: cases.filter(c => c.status === 'In Progress').length,
-    pending: cases.filter(c => c.status === 'Pending').length,
+    inProgress: cases.filter(c => c.status === 'In Progress').length,
     resolved: cases.filter(c => c.status === 'Resolved').length,
+    escalated: cases.filter(c => c.status === 'Escalated').length,
   };
 
   return (
     <Layout user={user}>
       <div>
         <div className="mb-6 pb-4 border-b border-slate-200">
-          <h1 className="text-xl font-semibold text-slate-800">My Cases</h1>
-          <p className="text-slate-500 text-sm mt-0.5">Cases assigned to you for investigation</p>
+          <h1 className="text-xl font-semibold text-slate-800">My Assigned Cases</h1>
+          <p className="text-slate-500 text-sm mt-0.5">Cases you assigned — track their progress here</p>
         </div>
 
         <div className="grid grid-cols-4 gap-4 mb-6">
           <div className="bg-white border border-slate-200 rounded-xl p-4">
-            <p className="text-xs text-slate-500 mb-1">Assigned to me</p>
+            <p className="text-xs text-slate-500 mb-1">I assigned</p>
             <p className="text-2xl font-semibold text-slate-800">{stats.total}</p>
           </div>
           <div className="bg-white border border-slate-200 rounded-xl p-4">
             <p className="text-xs text-slate-500 mb-1">In Progress</p>
-            <p className="text-2xl font-semibold text-teal-600">{stats.active}</p>
-          </div>
-          <div className="bg-white border border-slate-200 rounded-xl p-4">
-            <p className="text-xs text-slate-500 mb-1">Pending Info</p>
-            <p className="text-2xl font-semibold text-amber-600">{stats.pending}</p>
+            <p className="text-2xl font-semibold text-teal-600">{stats.inProgress}</p>
           </div>
           <div className="bg-white border border-slate-200 rounded-xl p-4">
             <p className="text-xs text-slate-500 mb-1">Resolved</p>
             <p className="text-2xl font-semibold text-green-600">{stats.resolved}</p>
+          </div>
+          <div className="bg-white border border-slate-200 rounded-xl p-4">
+            <p className="text-xs text-slate-500 mb-1">Escalated</p>
+            <p className="text-2xl font-semibold text-red-600">{stats.escalated}</p>
           </div>
         </div>
 
@@ -76,7 +76,10 @@ export default function MyCases() {
           <p className="text-slate-500 text-sm">Loading...</p>
         ) : cases.length === 0 ? (
           <div className="bg-white border border-slate-200 rounded-xl p-8 text-center">
-            <p className="text-slate-500 text-sm">No cases assigned to you yet.</p>
+            <p className="text-slate-500 text-sm">You haven't assigned any cases yet.</p>
+            <button onClick={() => router.push('/cases')} className="mt-3 text-sm text-teal-600 hover:underline">
+              Go to all cases →
+            </button>
           </div>
         ) : (
           <div className="flex flex-col gap-3">
@@ -95,20 +98,16 @@ export default function MyCases() {
                       </span>
                     </div>
                     <p className="text-sm font-medium text-slate-800">{c.title}</p>
-                    <p className="text-xs text-slate-500 mt-0.5">{c.department} · {c.category}</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-xs text-slate-400">{new Date(c.createdAt).toLocaleDateString()}</p>
-                    <p className={`text-xs mt-1 font-medium ${c.severity === 'High' ? 'text-red-500' : c.severity === 'Medium' ? 'text-amber-500' : 'text-green-500'}`}>
-                      {c.severity} severity
+                    <p className="text-xs text-slate-500 mt-0.5">
+                      {c.department} · Assigned to: <span className="font-medium text-slate-700">{c.assignedTo?.name || 'Unassigned'}</span>
                     </p>
                   </div>
-                </div>
-
-                <div className="mt-3 pt-3 border-t border-slate-100 flex gap-3">
-                  <span className="text-xs text-slate-500">
-                    Click to update status or add investigation notes
-                  </span>
+                  <div className="text-right shrink-0">
+                    <p className="text-xs text-slate-400">{new Date(c.createdAt).toLocaleDateString()}</p>
+                    {c.resolution?.summary && (
+                      <span className="text-xs bg-green-50 text-green-700 px-2 py-0.5 rounded-full mt-1 block">Resolution filed</span>
+                    )}
+                  </div>
                 </div>
               </div>
             ))}

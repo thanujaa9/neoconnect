@@ -61,7 +61,7 @@ export default function PollsPage() {
                 value={newPoll.question}
                 onChange={e => setNewPoll({ ...newPoll, question: e.target.value })}
                 placeholder="Poll question"
-                className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
                 required
               />
               {newPoll.options.map((opt, i) => (
@@ -75,19 +75,19 @@ export default function PollsPage() {
                     setNewPoll({ ...newPoll, options: updated });
                   }}
                   placeholder={`Option ${i + 1}`}
-                  className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
                 />
               ))}
               <button
                 type="button"
                 onClick={() => setNewPoll({ ...newPoll, options: [...newPoll.options, ''] })}
-                className="text-sm text-indigo-600 hover:underline text-left"
+                className="text-sm text-teal-600 hover:underline text-left"
               >
                 + Add option
               </button>
               <button
                 type="submit"
-                className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 rounded-lg text-sm"
+                className="bg-teal-600 hover:bg-teal-700 text-white font-medium py-2 rounded-lg text-sm"
               >
                 Create Poll
               </button>
@@ -121,7 +121,7 @@ export default function PollsPage() {
                         {!voted && poll.isActive ? (
                           <button
                             onClick={() => handleVote(poll._id, option._id)}
-                            className="w-full text-left px-4 py-2.5 border border-slate-300 rounded-lg text-sm hover:border-indigo-400 hover:bg-indigo-50 transition-colors"
+                            className="w-full text-left px-4 py-2.5 border border-slate-300 rounded-lg text-sm hover:border-teal-400 hover:bg-teal-50 transition-colors"
                           >
                             {option.text}
                           </button>
@@ -133,7 +133,7 @@ export default function PollsPage() {
                             </div>
                             <div className="w-full bg-slate-100 rounded-full h-2">
                               <div
-                                className="bg-indigo-500 h-2 rounded-full transition-all"
+                                className="bg-teal-500 h-2 rounded-full transition-all"
                                 style={{ width: `${pct}%` }}
                               />
                             </div>

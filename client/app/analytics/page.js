@@ -84,7 +84,7 @@ export default function AnalyticsPage() {
                   </div>
                   <div className="w-full bg-slate-100 rounded-full h-2">
                     <div
-                      className="bg-indigo-500 h-2 rounded-full"
+                      className="bg-teal-500 h-2 rounded-full"
                       style={{ width: `${(d.count / maxCount(data.byDepartment)) * 100}%` }}
                     />
                   </div>
@@ -104,7 +104,7 @@ export default function AnalyticsPage() {
                   </div>
                   <div className="w-full bg-slate-100 rounded-full h-2">
                     <div
-                      className="bg-indigo-500 h-2 rounded-full"
+                      className="bg-teal-500 h-2 rounded-full"
                       style={{ width: `${(c.count / maxCount(data.byCategory)) * 100}%` }}
                     />
                   </div>
@@ -124,7 +124,7 @@ export default function AnalyticsPage() {
                   </div>
                   <div className="w-full bg-slate-100 rounded-full h-2">
                     <div
-                      className="bg-indigo-500 h-2 rounded-full"
+                      className="bg-teal-500 h-2 rounded-full"
                       style={{ width: `${(s.count / maxCount(data.byStatus)) * 100}%` }}
                     />
                   </div>
