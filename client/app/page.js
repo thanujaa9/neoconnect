@@ -33,14 +33,12 @@ export default function LoginPage() {
           <h2 className="text-3xl font-semibold text-white mb-4">Every voice heard.<br/>Every case tracked.</h2>
           <p className="text-slate-400 text-sm leading-relaxed">A transparent platform for staff to raise issues, track progress, and see real change — with full accountability at every step.</p>
         </div>
-        <div className="flex flex-col gap-3">
-          {['Unique tracking ID for every case', 'Anonymous submission supported', 'Auto-escalation after 7 days', 'Role-based access control'].map((f, i) => (
-            <div key={i} className="flex items-center gap-2">
-              <div className="w-1.5 h-1.5 rounded-full bg-teal-500"></div>
-              <span className="text-slate-400 text-sm">{f}</span>
-            </div>
-          ))}
-        </div>
+        <div className="bg-slate-800 rounded-xl p-4">
+  <p className="text-slate-400 text-xs leading-relaxed italic">
+    "Every complaint gets a unique tracking ID and is assigned to a Case Manager — nothing gets lost."
+  </p>
+  <p className="text-slate-600 text-xs mt-2">— NeoConnect Mission</p>
+</div>
       </div>
 
       <div className="flex-1 flex items-center justify-center p-8">
