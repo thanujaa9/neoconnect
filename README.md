@@ -272,6 +272,4 @@ NEXT_PUBLIC_API_URL  Backend API base URL
 
 ---
 
-## 📄 License
 
-Built for the NeoStats Full Stack Hackathon. All rights reserved.
