@@ -10,7 +10,7 @@ NeoConnect is a full-stack staff feedback and complaint management platform buil
 
 | | Link |
 |---|---|
-| **Frontend** | https://neoconnect-git-main-thanuja9sekuri-8240s-projects.vercel.app |
+| **Frontend** | [https://neoconnect-git-main-thanuja9sekuri-8240s-projects.vercel.app](https://neoconnect-mu.vercel.app/)|
 | **Backend API** | https://neoconnect-server.onrender.com |
 | **GitHub Repo** | https://github.com/thanujaa9/neoconnect |
 | **Presentation (PPT)** | https://docs.google.com/presentation/d/15iP0DMMS6OeX_cSppnyZ7NPajAngRGGq/edit?usp=drive_link&ouid=114322488330643517506&rtpof=true&sd=true |
