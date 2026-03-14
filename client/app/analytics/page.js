@@ -175,7 +175,7 @@ export default function AnalyticsPage() {
           </div>
         </div>
 
-        <div className="bg-white border border-slate-200 rounded-xl p-5 mb-4">
+        <div className="bg-white border border-slate-200 rounded-xl p-5">
           <h2 className="text-sm font-semibold text-slate-700 mb-4">Cases by Status</h2>
           {statusData.length === 0 ? (
             <p className="text-slate-400 text-sm text-center py-8">No data yet</p>
@@ -197,25 +197,6 @@ export default function AnalyticsPage() {
             </ResponsiveContainer>
           )}
         </div>
-
-        {(user?.role === 'admin' || user?.role === 'secretariat') && (
-          <div className="bg-white border border-amber-200 rounded-xl p-4">
-            <h2 className="text-sm font-semibold text-slate-700 mb-1">7-Day Escalation</h2>
-            <p className="text-xs text-slate-400 mb-3">
-              Runs automatically every weekday at 9am. Cases assigned but not responded to within 7 working days get escalated. Click to run manually for demo.
-            </p>
-            <button
-              onClick={async () => {
-                const res = await api.runEscalation();
-                alert(res.message);
-                fetchAnalytics();
-              }}
-              className="bg-amber-500 hover:bg-amber-600 text-white text-xs px-4 py-2 rounded-lg transition-colors"
-            >
-              Run Escalation Check
-            </button>
-          </div>
-        )}
       </div>
     </Layout>
   );
