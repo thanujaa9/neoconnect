@@ -57,7 +57,14 @@ router.post('/login', async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
-
+router.get('/managers', require('../middleware/auth').auth, async (req, res) => {
+  try {
+    const managers = await User.find({ role: 'case_manager' }).select('name email');
+    res.json(managers);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
 // Get current logged in user
 router.get('/me', require('../middleware/auth').auth, async (req, res) => {
   try {

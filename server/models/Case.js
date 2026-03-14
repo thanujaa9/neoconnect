@@ -29,18 +29,24 @@ const caseSchema = new mongoose.Schema({
     addedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     addedAt: { type: Date, default: Date.now }
   }],
+  resolution: {
+  summary: { type: String },
+  outcome: { type: String, enum: ['Resolved', 'No Action Required', 'Referred', 'Escalated'] },
+  resolvedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  resolvedAt: { type: Date }
+},
+assignedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   fileUrl: { type: String },
   assignedAt: { type: Date }
 }, { timestamps: true });
 
 // Auto-generate tracking ID before saving
-caseSchema.pre('save', async function(next) {
+caseSchema.pre('save', async function() {
   if (!this.trackingId) {
     const year = new Date().getFullYear();
     const count = await mongoose.model('Case').countDocuments();
     this.trackingId = `NEO-${year}-${String(count + 1).padStart(3, '0')}`;
   }
-  next();
 });
 
 module.exports = mongoose.model('Case', caseSchema);

@@ -6,13 +6,17 @@ const Case = require('../models/Case');
 const { auth, allowRoles } = require('../middleware/auth');
 
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, 'uploads/'),
+  destination: (req, file, cb) => {
+    const uploadPath = path.join(__dirname, '../uploads');
+    cb(null, uploadPath);
+  },
   filename: (req, file, cb) => cb(null, Date.now() + path.extname(file.originalname))
 });
 const upload = multer({ storage });
 
 router.post('/', auth, upload.single('file'), async (req, res) => {
   try {
+    console.log('body:', req.body);
     const { title, description, category, department, location, severity, isAnonymous } = req.body;
     const caseData = {
       title, description, category, department, location, severity,
@@ -20,10 +24,14 @@ router.post('/', auth, upload.single('file'), async (req, res) => {
       submittedBy: isAnonymous === 'true' ? null : req.user.id,
       fileUrl: req.file ? `/uploads/${req.file.filename}` : null
     };
+    console.log('caseData:', caseData);
     const newCase = new Case(caseData);
+    console.log('saving...');
     await newCase.save();
+    console.log('saved:', newCase.trackingId);
     res.status(201).json(newCase);
   } catch (err) {
+    console.log('ERROR:', err.message);
     res.status(500).json({ message: err.message });
   }
 });
@@ -75,21 +83,40 @@ router.get('/:id', auth, async (req, res) => {
     const found = await Case.findById(req.params.id)
       .populate('submittedBy', 'name email')
       .populate('assignedTo', 'name email')
-      .populate('notes.addedBy', 'name');
+      .populate('assignedBy', 'name')
+      .populate('notes.addedBy', 'name')
+      .populate('assignmentHistory.assignedTo', 'name')
+      .populate('assignmentHistory.assignedBy', 'name')
+      .populate('resolution.resolvedBy', 'name');
     if (!found) return res.status(404).json({ message: 'Case not found' });
     res.json(found);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 });
-
 router.patch('/:id/assign', auth, allowRoles('secretariat', 'admin'), async (req, res) => {
   try {
-    const updated = await Case.findByIdAndUpdate(
-      req.params.id,
-      { assignedTo: req.body.assignedTo, status: 'Assigned', assignedAt: new Date() },
-      { new: true }
-    ).populate('assignedTo', 'name email');
+    const found = await Case.findById(req.params.id);
+
+    if (found.assignedBy && 
+        found.assignedBy.toString() !== req.user.id && 
+        req.user.role !== 'admin') {
+      return res.status(403).json({ message: 'Only the secretariat who assigned this case or admin can reassign it' });
+    }
+
+    found.assignedTo = req.body.assignedTo;
+    found.assignedBy = req.user.id;
+    found.status = 'Assigned';
+    found.assignedAt = new Date();
+    found.assignmentHistory.push({
+      assignedTo: req.body.assignedTo,
+      assignedBy: req.user.id,
+      assignedAt: new Date()
+    });
+    await found.save();
+    const updated = await Case.findById(req.params.id)
+      .populate('assignedTo', 'name email')
+      .populate('assignedBy', 'name');
     res.json(updated);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -119,5 +146,32 @@ router.post('/:id/notes', auth, allowRoles('case_manager', 'secretariat', 'admin
     res.status(500).json({ message: err.message });
   }
 });
-
+router.patch('/:id/resolve', auth, allowRoles('case_manager'), async (req, res) => {
+  try {
+    const { summary, outcome } = req.body;
+    const found = await Case.findById(req.params.id);
+    found.resolution = {
+      summary,
+      outcome,
+      resolvedBy: req.user.id,
+      resolvedAt: new Date()
+    };
+    found.status = 'Resolved';
+    await found.save();
+    res.json(found);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+router.get('/mycases/secretariat', auth, allowRoles('secretariat', 'admin'), async (req, res) => {
+  try {
+    const cases = await Case.find({ assignedBy: req.user.id })
+      .populate('submittedBy', 'name email')
+      .populate('assignedTo', 'name email')
+      .sort({ createdAt: -1 });
+    res.json(cases);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
 module.exports = router;
